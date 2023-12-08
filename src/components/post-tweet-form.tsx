@@ -119,7 +119,7 @@ export default function PostTweetForm() {
         maxLength={180}
         onChange={onChange}
         value={tweet}
-        placeholder='What is happening?'
+        placeholder='무슨 일이 일어나고 있나요?'
         required
       />
       <AttachFileButton htmlFor='file'>
