@@ -3,7 +3,14 @@ import { auth, db, storage } from '../firebase';
 import { useEffect, useState } from 'react';
 import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
 import { updateProfile } from 'firebase/auth';
-import { collection, getDocs, limit, orderBy, query, where } from 'firebase/firestore';
+import {
+  collection,
+  getDocs,
+  limit,
+  orderBy,
+  query,
+  where,
+} from 'firebase/firestore';
 import { ITweet } from '../components/timeline';
 import Tweet from '../components/tweet';
 
@@ -37,8 +44,27 @@ const AvatarInput = styled.input`
   display: none;
 `;
 
+const NameWrapper = styled.div`
+  display: flex;
+`;
+
 const Name = styled.span`
   font-size: 22px;
+`;
+
+const EditNameInput = styled.input``;
+
+const EditButton = styled.button`
+  color: white;
+  margin-left: 10px;
+  background-color: #1d9bf0;
+  font-weight: 600;
+  border: 0;
+  font-size: 12px;
+  padding: 5px 10px;
+  text-transform: uppercase;
+  border-radius: 5px;
+  cursor: pointer;
 `;
 
 const Tweets = styled.div`
@@ -52,6 +78,9 @@ export default function Profile() {
   const user = auth.currentUser;
   const [avatar, setAvatar] = useState(user?.photoURL);
   const [tweets, setTweets] = useState<ITweet[]>([]);
+  const [edit, setEdit] = useState(false);
+  const [name, setName] = useState(user?.displayName ?? 'Anonymous');
+  const [isLoading, setLoading] = useState(false);
   const onAvatarChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const { files } = e.target;
     if (!user) return;
@@ -63,19 +92,38 @@ export default function Profile() {
       setAvatar(avatarUrl);
       await updateProfile(user, {
         photoURL: avatarUrl,
-      })
+      });
     }
   };
+
+  const onNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setName(e.target.value);
+  };
+
+  const onEditHandle = async () => {
+    if (!user) return;
+    if (!edit) {
+      setEdit(true);
+    } else {
+      setLoading(true);
+      await updateProfile(user, {
+        displayName: name,
+      });
+      setLoading(false);
+      setEdit(false);
+    }
+  };
+
   const fetchTweets = async () => {
     const tweetQuery = query(
-      collection(db, "tweets"),
-      where("userID", "==", user?.uid),
-      orderBy("createdAt", "desc"),
+      collection(db, 'tweets'),
+      where('userID', '==', user?.uid),
+      orderBy('createdAt', 'desc'),
       limit(25)
     );
     const snapshot = await getDocs(tweetQuery);
-    const tweets = snapshot.docs.map(doc => {
-      const {tweet, createdAt, userID, username, photo} = doc.data();
+    const tweets = snapshot.docs.map((doc) => {
+      const { tweet, createdAt, userID, username, photo } = doc.data();
       return {
         tweet,
         createdAt,
@@ -112,9 +160,20 @@ export default function Profile() {
         type='file'
         accept='image/*'
       />
-      <Name>{user?.displayName ?? 'Anonymous'}</Name>
+      <NameWrapper>
+        {!edit ? (
+          <Name>{user?.displayName ?? 'Anonymous'}</Name>
+        ) : isLoading ? (
+          <EditNameInput onChange={onNameChange} value={name} disabled />
+        ) : (
+          <EditNameInput onChange={onNameChange} value={name} />
+        )}
+        <EditButton onClick={onEditHandle}>수정</EditButton>
+      </NameWrapper>
       <Tweets>
-          {tweets.map(tweet => <Tweet key={tweet.id} {...tweet}/>)}
+        {tweets.map((tweet) => (
+          <Tweet key={tweet.id} {...tweet} />
+        ))}
       </Tweets>
     </Wrapper>
   );
