@@ -37,7 +37,7 @@ export default function GithubButton() {
   return (
     <Button onClick={onClick}>
       <Logo src='/github-logo.svg' />
-      Continue with Github
+      Github로 로그인하기
     </Button>
   );
 }

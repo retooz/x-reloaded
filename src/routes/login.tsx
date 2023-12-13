@@ -40,7 +40,7 @@ export default function CreateAccount() {
   };
   return (
     <Wrapper>
-      <Title>Log Into 𝕏</Title>
+      <Title>𝕏</Title>
       <Form onSubmit={onSubmit}>
         <Input
           onChange={onChange}
@@ -60,7 +60,7 @@ export default function CreateAccount() {
         />
         <Input
           type='submit'
-          value={isLoading ? 'Loading...' : 'Log In'}
+          value={isLoading ? '로딩중...' : '로그인'}
         />
       </Form>
       {error !== '' ? <Error>{error}</Error> : null}
