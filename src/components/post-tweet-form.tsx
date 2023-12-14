@@ -123,7 +123,7 @@ export default function PostTweetForm() {
         required
       />
       <AttachFileButton htmlFor='file'>
-        {file ? 'Photo added' : 'Add photo'}
+        {file ? '사진 추가됨' : '사진 추가하기'}
       </AttachFileButton>
       <AttachFileInput
         onChange={onFileChange}
@@ -133,7 +133,7 @@ export default function PostTweetForm() {
       />
       <SubmitBtn
         type='submit'
-        value={isLoading ? 'Posting...' : 'Post Tweet'}
+        value={isLoading ? '게시하는 중...' : '게시하기'}
       />
     </Form>
   );
